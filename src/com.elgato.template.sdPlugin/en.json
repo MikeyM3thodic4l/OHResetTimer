@@ -1,7 +1,7 @@
 {
-  "Description": "Use this to create your own plugin", 
-  "Name": "Stream Deck Template", 
-  "Category": "Templates", 
+  "Description": "Reset countdown for Once Human.", 
+  "Name": "OHResetTimer", 
+  "Category": "utilities", 
   "com.elgato.template.action": {
     "Name": "Action", 
     "Tooltip": "This is the only action in this plugin"
