@@ -1,19 +1,30 @@
-/// <reference path="libs/js/action.js" />
-/// <reference path="libs/js/stream-deck.js" />
+const { exec } = require('child_process');
+const moment = require('moment-timezone');
 
-const myAction = new Action('com.elgato.template.action');
+function getTimeRemaining() {
+  const now = moment().tz('America/New_York');
+  const nextPeriodStart = moment().startOf('day').add(4, 'hours').add(Math.floor(now.hour() / 4) * 4, 'hours');
+  if (now.isAfter(nextPeriodStart)) {
+    nextPeriodStart.add(4, 'hours');
+  }
+  const duration = moment.duration(nextPeriodStart.diff(now));
+  return {
+    hours: Math.floor(duration.asHours()),
+    minutes: duration.minutes(),
+    seconds: duration.seconds()
+  };
+}
 
-/**
- * The first event fired when Stream Deck starts
- */
-$SD.onConnected(({ actionInfo, appInfo, connection, messageType, port, uuid }) => {
-	console.log('Stream Deck connected!');
-});
+function updateButton(state) {
+  const remainingTime = getTimeRemaining();
+  state.setState({
+    text: `${remainingTime.hours}h ${remainingTime.minutes}m ${remainingTime.seconds}s`
+  });
+}
 
-myAction.onKeyUp(({ action, context, device, event, payload }) => {
-	console.log('Your key code goes here!');
-});
-
-myAction.onDialRotate(({ action, context, device, event, payload }) => {
-	console.log('Your dial code goes here!');
-});
+module.exports = (action, state) => {
+  updateButton(state);
+  setInterval(() => {
+    updateButton(state);
+  }, 1000);
+};
